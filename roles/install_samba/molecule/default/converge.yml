@@ -1,7 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include install_samba"
-      include_role:
-        name: "install_samba"
