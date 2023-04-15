@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include samba"
+    - name: "Include publica"
       include_role:
-        name: "samba"
+        name: "publica"
