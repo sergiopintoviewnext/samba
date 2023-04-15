@@ -43,7 +43,6 @@
       Retype new SMB password: "{{ contraseña }}"
 
 
-
 - name: Crear carpeta
   ansible.builtin.file:
     path: "{{ path }}"
@@ -51,8 +50,6 @@
     group: "{{ grupo }}"
     mode: '0777'
     state: directory
-
-
 
 
 - name: Configuracion fichero samba

@@ -11,6 +11,7 @@ paquetes:
 # path de carpeta a compartir
 path: /media/compartir_samba
 
+
 # configuracion smb.conf
 nombre_carpeta: carpeta_samba
 comentario: Carpeta compartida en contenedor docker
@@ -18,9 +19,11 @@ browsable: yes
 guest: yes
 read: no
 
+
 # usuario para smb
 usuario: sergio
 contraseña: 123456
+
 
 # grupo para smb
 grupo: samba_group
