@@ -8,8 +8,8 @@
   with_items: "{{ paquetes }}"
 
 
-- name: crear carpeta
-  file:
+- name: Crear carpeta
+  ansible.builtin.file:
     path: "{{ path }}"
     owner: root
     group: root
@@ -30,7 +30,7 @@
 
 
 - name: Reiniciar servicio samba
-  service:
+  ansible.builtin.service:
     name: smbd
     state: started
     enabled: true
