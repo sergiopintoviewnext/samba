@@ -1,0 +1,51 @@
+---
+
+
+- name: añadir repo centos8
+  ansible.builtin.yum_repository:
+    name: centos8
+    baseurl: http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/
+    description: repositorio centos8
+
+
+- name: Instalar paquetes samba
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+    disable_gpg_check: true
+  with_items: "{{ paquetes }}"
+
+
+- name: Iniciar servicio samba
+  ansible.builtin.service:
+    name: smb
+    state: started
+    enabled: true
+
+
+- name: Crear carpeta
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: root
+    mode: '0777'
+    state: directory
+
+
+- name: Configuracion fichero samba
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [{{ nombre_carpeta }}]
+        comment = {{ comentario }}
+        path = {{ path }}
+        browsable = {{ browsable }}
+        guest ok = {{ guest }}
+        read only = {{ read }}
+
+
+- name: Reiniciar servicio samba
+  ansible.builtin.service:
+    name: smb
+    state: restarted

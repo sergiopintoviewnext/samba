@@ -1,44 +1,8 @@
----
-
-- name: Instalar paquetes samba
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  with_items: "{{ paquetes }}"
+- name: Incluir samba Debian
+  ansible.builtin.include_tasks: debian.yml
+  when: ansible_distribution == "Debian"
 
 
-- name: Iniciar servicio samba
-  ansible.builtin.service:
-    name: smbd
-    state: started
-    enabled: true
-
-
-- name: Crear carpeta
-  ansible.builtin.file:
-    path: "{{ path }}"
-    owner: root
-    group: root
-    mode: '0777'
-    state: directory
-
-
-- name: Configuracion fichero samba
-  ansible.builtin.blockinfile:
-    path: /etc/samba/smb.conf
-    block: |
-      [{{ nombre_carpeta }}]
-        comment = {{ comentario }}
-        path = {{ path }}
-        browsable = {{ browsable }}
-        guest ok = {{ guest }}
-        read only = {{ read }}
-
-
-- name: Reiniciar servicio samba
-  ansible.builtin.service:
-    name: smbd
-    state: restarted
-
-...
+- name: Incluir samba Redhat
+  ansible.builtin.include_tasks: redhat.yml
+  when: ansible_distribution == "RedHat"
