@@ -40,5 +40,6 @@
   ansible.builtin.service:
     name: smbd
     state: restarted
+  changed_when: false
 
 ...

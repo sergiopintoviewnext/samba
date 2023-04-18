@@ -8,39 +8,42 @@
   with_items: "{{ paquetes_debian }}"
 
 
-- name: Reiniciar servicio samba
+- name: Iniciar servicio samba
   ansible.builtin.service:
     name: smbd
     state: started
     enabled: true
 
 
-- name: cifrar contraseña
-  command:
+- name: Cifrar contraseña
+  ansible.builtin.command:
     cmd: mkpasswd {{ contraseña }}
   register: hash
+  changed_when: false
 
 
-- name: crear grupo
-  group:
+- name: Crear grupo
+  ansible.builtin.group:
     name: "{{ grupo }}"
     state: present
 
 
-- name: crear usuario
-  user:
+- name: Crear usuario
+  ansible.builtin.user:
     name: "{{ usuario }}"
     password: "{{ hash.stdout }}"
     groups: "{{ grupo }}"
     state: present
+  changed_when: false
 
 
-- name: añadir usuario a smb
-  expect:
+- name: Añadir usuario a smb
+  ansible.builtin.expect:
     command: smbpasswd -a {{ usuario }}
     responses:
       New SMB password: "{{ contraseña }}"
       Retype new SMB password: "{{ contraseña }}"
+  changed_when: false
 
 
 - name: Crear carpeta
@@ -68,6 +71,7 @@
 - name: Reiniciar servicio samba
   ansible.builtin.service:
     name: smbd
-    state: restarted    
+    state: restarted
+  changed_when: false 
 
 ...

@@ -1,7 +1,6 @@
 ---
 
-
-- name: añadir repo centos8
+- name: Añadir repo centos8
   ansible.builtin.yum_repository:
     name: centos8
     baseurl: http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/
@@ -17,21 +16,21 @@
   with_items: "{{ paquetes_redhat }}"
 
 
-- name: instalar pexpect
-  pip:
+- name: Instalar pexpect
+  ansible.builtin.pip:
     name: pexpect
     state: present
 
 
-- name: Reiniciar servicio samba
+- name: Iniciar servicio samba
   ansible.builtin.service:
     name: smb
     state: started
     enabled: true
 
 
-- name: copiar fichero python para hash
-  template:
+- name: Copiar fichero python para hash
+  ansible.builtin.template:
     dest: /tmp/hash.py
     src: hash.py
     owner: root
@@ -39,32 +38,36 @@
     mode: '0755'
 
 
-- name: crear hash de contraseña
-  command:
+- name: Crear hash de contraseña
+  ansible.builtin.command:
     cmd: python3 hash.py
     chdir: /tmp
   register: hash
+  changed_when: false
 
-- name: crear grupo
-  group:
+
+- name: Crear grupo
+  ansible.builtin.group:
     name: "{{ grupo }}"
     state: present
 
 
-- name: crear usuario
-  user:
+- name: Crear usuario
+  ansible.builtin.user:
     name: "{{ usuario }}"
     password: "{{ hash.stdout }}"
     groups: "{{ grupo }}"
     state: present
+  changed_when: false
 
 
-- name: añadir usuario a smb
-  expect:
+- name: Añadir usuario a smb
+  ansible.builtin.expect:
     command: smbpasswd -a {{ usuario }}
     responses:
       New SMB password: "{{ contraseña }}"
       Retype new SMB password: "{{ contraseña }}"
+  changed_when: false
 
 
 - name: Crear carpeta
@@ -92,6 +95,7 @@
 - name: Reiniciar servicio samba
   ansible.builtin.service:
     name: smb
-    state: restarted    
+    state: restarted
+  changed_when: false 
 
 ...
