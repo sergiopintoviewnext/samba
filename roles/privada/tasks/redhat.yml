@@ -1,0 +1,97 @@
+---
+
+
+- name: añadir repo centos8
+  ansible.builtin.yum_repository:
+    name: centos8
+    baseurl: http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/
+    description: repositorio centos8
+
+
+- name: Instalar paquetes samba
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+    disable_gpg_check: true
+  with_items: "{{ paquetes_redhat }}"
+
+
+- name: instalar pexpect
+  pip:
+    name: pexpect
+    state: present
+
+
+- name: Reiniciar servicio samba
+  ansible.builtin.service:
+    name: smb
+    state: started
+    enabled: true
+
+
+- name: copiar fichero python para hash
+  template:
+    dest: /tmp/hash.py
+    src: hash.py
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: crear hash de contraseña
+  command:
+    cmd: python3 hash.py
+    chdir: /tmp
+  register: hash
+
+- name: crear grupo
+  group:
+    name: "{{ grupo }}"
+    state: present
+
+
+- name: crear usuario
+  user:
+    name: "{{ usuario }}"
+    password: "{{ hash.stdout }}"
+    groups: "{{ grupo }}"
+    state: present
+
+
+- name: añadir usuario a smb
+  expect:
+    command: smbpasswd -a {{ usuario }}
+    responses:
+      New SMB password: "{{ contraseña }}"
+      Retype new SMB password: "{{ contraseña }}"
+
+
+- name: Crear carpeta
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: "{{ grupo }}"
+    mode: '0777'
+    state: directory
+
+
+- name: Configuracion fichero samba
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [{{ nombre_carpeta }}]
+        comment = {{ comentario }}
+        path = {{ path }}
+        valid users = @{{ grupo }}
+        browsable = {{ browsable }}
+        guest ok = {{ guest }}
+        read only = {{ read }}
+
+        
+- name: Reiniciar servicio samba
+  ansible.builtin.service:
+    name: smb
+    state: restarted    
+
+...

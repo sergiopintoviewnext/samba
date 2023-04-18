@@ -1,0 +1,73 @@
+---
+
+- name: Instalar paquetes samba
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items: "{{ paquetes_debian }}"
+
+
+- name: Reiniciar servicio samba
+  ansible.builtin.service:
+    name: smbd
+    state: started
+    enabled: true
+
+
+- name: cifrar contraseña
+  command:
+    cmd: mkpasswd {{ contraseña }}
+  register: hash
+
+
+- name: crear grupo
+  group:
+    name: "{{ grupo }}"
+    state: present
+
+
+- name: crear usuario
+  user:
+    name: "{{ usuario }}"
+    password: "{{ hash.stdout }}"
+    groups: "{{ grupo }}"
+    state: present
+
+
+- name: añadir usuario a smb
+  expect:
+    command: smbpasswd -a {{ usuario }}
+    responses:
+      New SMB password: "{{ contraseña }}"
+      Retype new SMB password: "{{ contraseña }}"
+
+
+- name: Crear carpeta
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: "{{ grupo }}"
+    mode: '0777'
+    state: directory
+
+
+- name: Configuracion fichero samba
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [{{ nombre_carpeta }}]
+        comment = {{ comentario }}
+        path = {{ path }}
+        valid users = @{{ grupo }}
+        browsable = {{ browsable }}
+        guest ok = {{ guest }}
+        read only = {{ read }}
+
+
+- name: Reiniciar servicio samba
+  ansible.builtin.service:
+    name: smbd
+    state: restarted    
+
+...

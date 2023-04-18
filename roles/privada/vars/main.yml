@@ -1,11 +1,17 @@
 ---
 
 # paquetes samba
-paquetes:
+paquetes_debian:
   - samba
   - samba-common
   - python3-pexpect
   - whois
+
+paquetes_redhat:
+  - samba
+  - samba-common
+  - python3-pip
+  - python3
 
 
 # path de carpeta a compartir
