@@ -89,9 +89,5 @@
     state: restarted
   changed_when: false 
 
-- name: Eliminar fichero hash.py
-  ansible.builtin.file:
-    path: /tmp/hash.py
-    state: absent
 
 ...
