@@ -24,6 +24,7 @@
     state: directory
   with_items: "{{ config }}"
 
+
 - name: Configuracion fichero samba
   ansible.builtin.template:
     src: smb.conf.j2

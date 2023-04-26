@@ -17,9 +17,10 @@
 
 - name: Cifrar contraseña
   ansible.builtin.command:
-    cmd: mkpasswd {{ contraseña }}
+    cmd: mkpasswd {{ item.contraseña }}
   register: hash
   changed_when: false
+  with_items: "{{ usuarios }}"
 
 
 - name: Crear grupo
@@ -30,42 +31,41 @@
 
 - name: Crear usuario
   ansible.builtin.user:
-    name: "{{ usuario }}"
-    password: "{{ hash.stdout }}"
+    name: "{{ item.item.usuario }}"
+    password: "{{ item.stdout }}"
     groups: "{{ grupo }}"
     state: present
   changed_when: false
+  with_items: "{{ hash.results }}"
 
 
 - name: Añadir usuario a smb
   ansible.builtin.expect:
-    command: smbpasswd -a {{ usuario }}
+    command: smbpasswd -a {{ item.usuario }}
     responses:
-      New SMB password: "{{ contraseña }}"
-      Retype new SMB password: "{{ contraseña }}"
+      New SMB password: "{{ item.contraseña }}"
+      Retype new SMB password: "{{ item.contraseña }}"
   changed_when: false
+  with_items: "{{ usuarios }}"
 
 
 - name: Crear carpeta
   ansible.builtin.file:
-    path: "{{ path }}"
+    path: "{{ item.path }}"
     owner: root
-    group: "{{ grupo }}"
+    group: root
     mode: '0777'
     state: directory
+  with_items: "{{ config }}"
 
 
 - name: Configuracion fichero samba
-  ansible.builtin.blockinfile:
-    path: /etc/samba/smb.conf
-    block: |
-      [{{ nombre_carpeta }}]
-        comment = {{ comentario }}
-        path = {{ path }}
-        valid users = @{{ grupo }}
-        browsable = {{ browsable }}
-        guest ok = {{ guest }}
-        read only = {{ read }}
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0775'
 
 
 - name: Reiniciar servicio samba

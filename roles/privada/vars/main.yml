@@ -1,4 +1,12 @@
 ---
+#repos centos
+repos:
+  - {
+    nombre: baseos,
+    url: http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/,
+    descripcion: repositorio centos baseos
+  }
+
 
 # paquetes samba
 paquetes_debian:
@@ -14,24 +22,41 @@ paquetes_redhat:
   - samba-client
   - python3-pip
   - python3
+  - openssl
 
 
-# path de carpeta a compartir
-path: /media/compartir_samba
+#configuracion smb.conf de las diferentes carpetas
+config: 
+  - {
+    path: /media/compartir_samba,
+    nombre_carpeta: carpeta_samba,
+    comentario: Carpeta compartida en contenedor docker,
+    browsable: yes,
+    guest: no,
+    read: no
+  }
 
-
-# configuracion smb.conf
-nombre_carpeta: carpeta_samba
-comentario: Carpeta compartida en contenedor docker
-browsable: yes
-guest: yes
-read: no
+  - {
+    path: /media/compartir_samba2,
+    nombre_carpeta: carpeta_samba2,
+    comentario: Carpeta compartida en contenedor docker,
+    browsable: yes,
+    guest: no,
+    read: no
+  }
 
 
 # usuario para smb
-usuario: sergio
-contraseña: 123456
+usuarios:
+  - {
+    usuario: sergio,
+    contraseña: 123456
+  }
 
+  - {
+    usuario: pepe,
+    contraseña: 123456
+  }
 
 # grupo para smb
 grupo: samba_group
