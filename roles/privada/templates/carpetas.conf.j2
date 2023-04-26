@@ -1,0 +1,11 @@
+{% for i in config %}
+
+    [{{ i.nombre_carpeta }}]
+    comment = {{ i.comentario }}
+    path = {{ i.path }}
+    valid suer = @{{ grupo }}
+    browsable = {{ i.browsable }}
+    guest ok = {{ i.guest }}
+    read only = {{ i.read }}
+
+{% endfor %}
