@@ -25,23 +25,21 @@
 
 - name: Crear carpeta
   ansible.builtin.file:
-    path: "{{ path }}"
+    path: "{{ item.path }}"
     owner: root
     group: root
     mode: '0777'
     state: directory
+  with_items: "{{ config }}"
 
 
 - name: Configuracion fichero samba
-  ansible.builtin.blockinfile:
-    path: /etc/samba/smb.conf
-    block: |
-      [{{ nombre_carpeta }}]
-        comment = {{ comentario }}
-        path = {{ path }}
-        browsable = {{ browsable }}
-        guest ok = {{ guest }}
-        read only = {{ read }}
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0775'
 
 
 - name: Reiniciar servicio samba

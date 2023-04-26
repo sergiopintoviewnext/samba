@@ -9,12 +9,13 @@
   tasks:
 
   - name: Conexion a carpeta compartida
-    shell: smbclient //localhost/{{ nombre_carpeta }} -N
+    shell: smbclient //localhost/{{ item.nombre_carpeta }} -N
     register: conexion
+    with_items: "{{ config }}"
 
 
   - name: Comprobar conexion
     ansible.builtin.assert:
-      that: 'conexion.rc == 0 and "Try \"help\" to get a list of possible commands." in conexion.stdout'
-      success_msg: "Conexion a carpeta compartida realizada correctamente"
-      
+      that: 'item.rc == 0 and "Try \"help\" to get a list of possible commands." in item.stdout'
+      success_msg: "Conexion a {{ item.item.nombre_carpeta }} realizada correctamente"
+    with_items: "{{ conexion.results }}"

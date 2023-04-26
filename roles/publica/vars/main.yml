@@ -7,15 +7,24 @@ paquetes:
   - samba-client
 
 
-# path de carpeta a compartir
-path: /media/compartir_samba
+#configuracion smb.conf de las diferentes carpetas
+config: 
+  - {
+    path: /media/compartir_samba,
+    nombre_carpeta: carpeta_samba,
+    comentario: Carpeta compartida en contenedor docker,
+    browsable: yes,
+    guest: yes,
+    read: no
+  }
 
-
-#configuracion smb.conf
-nombre_carpeta: carpeta_samba
-comentario: Carpeta compartida en contenedor docker
-browsable: yes
-guest: yes
-read: no
+  - {
+    path: /media/compartir_samba2,
+    nombre_carpeta: carpeta_samba2,
+    comentario: Carpeta compartida en contenedor docker,
+    browsable: yes,
+    guest: yes,
+    read: no
+  }
 
 ...
