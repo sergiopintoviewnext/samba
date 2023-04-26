@@ -4,7 +4,17 @@
 - name: Verify
   hosts: all
   gather_facts: false
+  vars_files:
+    - main.yml
   tasks:
-  - name: Example assertion
+
+  - name: Conexion a carpeta compartida
+    shell: smbclient //localhost/{{ nombre_carpeta }} -N
+    register: conexion
+
+
+  - name: Comprobar conexion
     ansible.builtin.assert:
-      that: true
+      that: 'conexion.rc == 0 and "Try \"help\" to get a list of possible commands." in conexion.stdout'
+      success_msg: "Conexion a carpeta compartida realizada correctamente"
+      
