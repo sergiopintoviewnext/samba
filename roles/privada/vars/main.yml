@@ -62,7 +62,7 @@ usuarios:
 
   - {
     usuario: fernando,
-    contraseña: juanpa
+    contraseña: 123456
   }
 
 # grupo para smb

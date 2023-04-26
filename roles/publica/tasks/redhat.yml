@@ -35,11 +35,17 @@
 
 - name: Configuracion fichero samba
   ansible.builtin.template:
-    src: smb.conf.j2
-    dest: /etc/samba/smb.conf
+    src: carpetas.conf.j2
+    dest: /etc/samba/{{ nombre_fichero }}
     owner: root
     group: root
     mode: '0775'
+
+
+- name: Añadir include en smb.conf
+  ansible.builtin.lineinfile:
+    path: /etc/samba/smb.conf
+    line: "include = /etc/samba/{{ nombre_fichero }}"
 
 
 - name: Reiniciar servicio samba

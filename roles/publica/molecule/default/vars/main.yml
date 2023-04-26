@@ -7,6 +7,10 @@ paquetes:
   - samba-client
 
 
+#nombre fichero con config carpetas
+nombre_fichero: sergio.conf
+
+
 #configuracion smb.conf de las diferentes carpetas
 config: 
   - {
@@ -26,5 +30,9 @@ config:
     guest: yes,
     read: no
   }
+
+
+# grupo para smb
+grupo: samba_group
 
 ...
